@@ -1,0 +1,20 @@
+name: JZombieAttack
+version: '1.0'
+main: org.johnfries.jZombieAttack.JZombieAttack
+api-version: '1.20'
+authors: [ john-fries ]
+description: Simple plugin for johnfries.net
+website: https://johnfries.net
+commands:
+  battleaxe:
+    description: Gives all players a battleaxe
+    usage: /<command>
+  spawntrader:
+    description: Spawns a villager trader with custom axe trades
+    usage: /<command>
+  removetrader:
+    description: Removes the Axe Trader you are near
+    usage: /<command>
+  wave:
+    description: Spawns a wave of zombies based on tier
+    usage: /<command> [amount per player] [tier]
