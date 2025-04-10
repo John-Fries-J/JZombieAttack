@@ -6,6 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.Material;
@@ -14,6 +15,8 @@ import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.ChatColor;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.johnfries.jZombieAttack.commands.GiveAxe;
 import org.johnfries.jZombieAttack.commands.SpawnTrader;
 import org.johnfries.jZombieAttack.commands.RemoveTrader;
@@ -30,7 +33,9 @@ public final class JZombieAttack extends JavaPlugin implements Listener {
         getCommand("battleaxe").setExecutor(new GiveAxe(this));
         getCommand("spawntrader").setExecutor(new SpawnTrader(this));
         getCommand("removetrader").setExecutor(new RemoveTrader(this));
-        getCommand("wave").setExecutor(new WaveCommand(this));
+        WaveCommand waveCommand = new WaveCommand(this);
+        getCommand("wave").setExecutor(waveCommand);
+        getCommand("wave").setTabCompleter(waveCommand);
     }
 
     @Override
@@ -42,12 +47,11 @@ public final class JZombieAttack extends JavaPlugin implements Listener {
         ItemStack battleAxe = new ItemStack(Material.NETHERITE_SWORD);
         ItemMeta meta = battleAxe.getItemMeta();
 
-        meta.setCustomModelData(12345);
+        meta.setCustomModelData(1);
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&c&lBattle Axe"));
         meta.setLore(Arrays.asList(
                 ChatColor.translateAlternateColorCodes('&', "&7&oA battle axe that is used by the"),
-                ChatColor.translateAlternateColorCodes('&', "&7&ozombies of the apocalypse."),
-                ChatColor.translateAlternateColorCodes('&', "")
+                ChatColor.translateAlternateColorCodes('&', "&7&ozombies of the apocalypse.")
         ));
         meta.setUnbreakable(true);
 
@@ -63,7 +67,7 @@ public final class JZombieAttack extends JavaPlugin implements Listener {
 
             if (item != null && item.getType() == Material.NETHERITE_SWORD
                     && item.hasItemMeta() && item.getItemMeta().hasCustomModelData()
-                    && item.getItemMeta().getCustomModelData() == 12345) {
+                    && item.getItemMeta().getCustomModelData() >= 0 && item.getItemMeta().getCustomModelData() <= 5) {
 
                 player.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, player.getLocation(), 30, 0.5, 0.5, 0.5, 0.1);
                 player.playSound(player.getLocation(), Sound.BLOCK_BAMBOO_BREAK, 1.0f, 1.0f);

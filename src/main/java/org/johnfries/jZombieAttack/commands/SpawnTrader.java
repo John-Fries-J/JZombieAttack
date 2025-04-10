@@ -3,6 +3,8 @@ package org.johnfries.jZombieAttack.commands;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -10,6 +12,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -18,6 +21,7 @@ import org.johnfries.jZombieAttack.JZombieAttack;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class SpawnTrader implements CommandExecutor {
 
@@ -46,39 +50,39 @@ public class SpawnTrader implements CommandExecutor {
 
         List<MerchantRecipe> recipes = new ArrayList<>();
 
-        ItemStack battleAxe = plugin.createBattleAxe();
-        ItemStack reapersEdge = createUpgradedBattleAxe(1, "&c&lReaper's Edge");
-        MerchantRecipe recipe1 = new MerchantRecipe(reapersEdge, 10);
-        recipe1.addIngredient(battleAxe);
-        recipe1.addIngredient(new ItemStack(Material.STONE, 10));
+        ItemStack basicBat = plugin.createBattleAxe();
+        ItemStack barbedBat = createUpgradedBattleAxe(1, "&c&lBarbed Bat", 2, 4.2);
+        MerchantRecipe recipe1 = new MerchantRecipe(barbedBat, 10);
+        recipe1.addIngredient(basicBat);
+        recipe1.addIngredient(createRedDye(10, 2));
         recipe1.setExperienceReward(false);
         recipes.add(recipe1);
 
-        ItemStack doomCleaver = createUpgradedBattleAxe(2, "&c&lDoom Cleaver");
-        MerchantRecipe recipe2 = new MerchantRecipe(doomCleaver, 10);
-        recipe2.addIngredient(reapersEdge);
-        recipe2.addIngredient(new ItemStack(Material.STONE, 20));
+        ItemStack barbedNailBat = createUpgradedBattleAxe(2, "&c&lBarbed and Nail Bat", 3, 4.4);
+        MerchantRecipe recipe2 = new MerchantRecipe(barbedNailBat, 10);
+        recipe2.addIngredient(barbedBat);
+        recipe2.addIngredient(createRedDye(20, 2));
         recipe2.setExperienceReward(false);
         recipes.add(recipe2);
 
-        ItemStack soulShredder = createUpgradedBattleAxe(3, "&c&lSoul Shredder");
-        MerchantRecipe recipe3 = new MerchantRecipe(soulShredder, 10);
-        recipe3.addIngredient(doomCleaver);
-        recipe3.addIngredient(new ItemStack(Material.STONE, 30));
+        ItemStack shredder = createUpgradedBattleAxe(3, "&c&lShredder", 5, 4.6);
+        MerchantRecipe recipe3 = new MerchantRecipe(shredder, 10);
+        recipe3.addIngredient(barbedNailBat);
+        recipe3.addIngredient(createRedDye(30, 2));
         recipe3.setExperienceReward(false);
         recipes.add(recipe3);
 
-        ItemStack apocalypseBlade = createUpgradedBattleAxe(4, "&c&lApocalypse Blade");
-        MerchantRecipe recipe4 = new MerchantRecipe(apocalypseBlade, 10);
-        recipe4.addIngredient(soulShredder);
-        recipe4.addIngredient(new ItemStack(Material.STONE, 40));
+        ItemStack slasher = createUpgradedBattleAxe(4, "&c&lSlasher", 6, 4.8);
+        MerchantRecipe recipe4 = new MerchantRecipe(slasher, 10);
+        recipe4.addIngredient(shredder);
+        recipe4.addIngredient(createRedDye(40, 2));
         recipe4.setExperienceReward(false);
         recipes.add(recipe4);
 
-        ItemStack zombieBane = createUpgradedBattleAxe(5, "&c&lZombie Bane");
-        MerchantRecipe recipe5 = new MerchantRecipe(zombieBane, 10);
-        recipe5.addIngredient(apocalypseBlade);
-        recipe5.addIngredient(new ItemStack(Material.STONE, 50));
+        ItemStack apocalypseBlade = createUpgradedBattleAxe(10, "&c&lApocalypse Blade", 4, 4.0);
+        MerchantRecipe recipe5 = new MerchantRecipe(apocalypseBlade, 10);
+        recipe5.addIngredient(slasher);
+        recipe5.addIngredient(createRedDye(50, 2));
         recipe5.setExperienceReward(false);
         recipes.add(recipe5);
 
@@ -88,32 +92,33 @@ public class SpawnTrader implements CommandExecutor {
         return true;
     }
 
-    private ItemStack createUpgradedBattleAxe(int sharpnessLevel, String name) {
+    private ItemStack createUpgradedBattleAxe(int sharpnessLevel, String name, int customModelData, double attackSpeed) {
         ItemStack upgradedBattleAxe = new ItemStack(Material.NETHERITE_SWORD);
         ItemMeta meta = upgradedBattleAxe.getItemMeta();
 
-        meta.setCustomModelData(12345);
+        meta.setCustomModelData(customModelData);
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
         meta.setLore(Arrays.asList(
                 ChatColor.translateAlternateColorCodes('&', "&7&oA sharper battle axe forged by the"),
-                ChatColor.translateAlternateColorCodes('&', "&7&ozombies of the apocalypse."),
-                ChatColor.translateAlternateColorCodes('&', "&7Sharpness " + romanNumeral(sharpnessLevel))
+                ChatColor.translateAlternateColorCodes('&', "&7&ozombies of the apocalypse.")
         ));
         meta.setUnbreakable(true);
-        meta.addEnchant(Enchantment.DAMAGE_ALL, sharpnessLevel, true);
+        if (sharpnessLevel > 0) {
+            meta.addEnchant(Enchantment.DAMAGE_ALL, sharpnessLevel, true);
+        }
+        double modifier = attackSpeed - 4.0;
+        meta.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED,
+                new AttributeModifier(UUID.randomUUID(), "generic.attackSpeed", modifier, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND));
 
         upgradedBattleAxe.setItemMeta(meta);
         return upgradedBattleAxe;
     }
 
-    private String romanNumeral(int number) {
-        return switch (number) {
-            case 1 -> "I";
-            case 2 -> "II";
-            case 3 -> "III";
-            case 4 -> "IV";
-            case 5 -> "V";
-            default -> String.valueOf(number);
-        };
+    private ItemStack createRedDye(int amount, int customModelData) {
+        ItemStack redDye = new ItemStack(Material.RED_DYE, amount);
+        ItemMeta meta = redDye.getItemMeta();
+        meta.setCustomModelData(customModelData);
+        redDye.setItemMeta(meta);
+        return redDye;
     }
 }
