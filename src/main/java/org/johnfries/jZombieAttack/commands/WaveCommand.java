@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 import org.johnfries.jZombieAttack.JZombieAttack;
 
@@ -104,51 +105,39 @@ public class WaveCommand implements CommandExecutor, TabCompleter {
     }
 
     private void configureZombie(Zombie zombie, int tier) {
+        String tierPath = "waves.tier" + tier;
         EntityEquipment equipment = zombie.getEquipment();
 
+        double health = plugin.getConfig().getDouble(tierPath + ".health", 20.0);
+        double healthVariation = plugin.getConfig().getDouble(tierPath + ".health-variation", 0.0);
+        double speed = plugin.getConfig().getDouble(tierPath + ".speed", 0.23);
+        double speedVariation = plugin.getConfig().getDouble(tierPath + ".speed-variation", 0.0);
+        double damage = plugin.getConfig().getDouble(tierPath + ".damage", 3.0);
+        double damageVariation = plugin.getConfig().getDouble(tierPath + ".damage-variation", 0.0);
+        double armorChance = plugin.getConfig().getDouble(tierPath + ".armor-chance", 0.7);
+        double weaponChance = plugin.getConfig().getDouble(tierPath + ".weapon-chance", 0.6);
+        float bottleCapDropChance = (float) plugin.getConfig().getDouble(tierPath + ".bottle-cap-drop-chance", 0.0);
+
+        String helmetName = plugin.getConfig().getString(tierPath + ".helmet", "LEATHER_HELMET");
+        String chestplateName = plugin.getConfig().getString(tierPath + ".chestplate", "LEATHER_CHESTPLATE");
+        String leggingsName = plugin.getConfig().getString(tierPath + ".leggings", "LEATHER_LEGGINGS");
+        String bootsName = plugin.getConfig().getString(tierPath + ".boots", "LEATHER_BOOTS");
+
         Material helmetMaterial, chestplateMaterial, leggingsMaterial, bootsMaterial;
-        Material weaponMaterial = Material.IRON_SWORD;
-        switch (tier) {
-            case 1 -> {
-                helmetMaterial = Material.LEATHER_HELMET;
-                chestplateMaterial = Material.LEATHER_CHESTPLATE;
-                leggingsMaterial = Material.LEATHER_LEGGINGS;
-                bootsMaterial = Material.LEATHER_BOOTS;
-            }
-            case 2 -> {
-                helmetMaterial = Material.CHAINMAIL_HELMET;
-                chestplateMaterial = Material.CHAINMAIL_CHESTPLATE;
-                leggingsMaterial = Material.CHAINMAIL_LEGGINGS;
-                bootsMaterial = Material.CHAINMAIL_BOOTS;
-            }
-            case 3 -> {
-                helmetMaterial = Material.IRON_HELMET;
-                chestplateMaterial = Material.IRON_CHESTPLATE;
-                leggingsMaterial = Material.IRON_LEGGINGS;
-                bootsMaterial = Material.IRON_BOOTS;
-            }
-            case 4 -> {
-                helmetMaterial = Material.GOLDEN_HELMET;
-                chestplateMaterial = Material.GOLDEN_CHESTPLATE;
-                leggingsMaterial = Material.GOLDEN_LEGGINGS;
-                bootsMaterial = Material.GOLDEN_BOOTS;
-            }
-            case 5 -> {
-                helmetMaterial = Material.DIAMOND_HELMET;
-                chestplateMaterial = Material.DIAMOND_CHESTPLATE;
-                leggingsMaterial = Material.DIAMOND_LEGGINGS;
-                bootsMaterial = Material.DIAMOND_BOOTS;
-            }
-            default -> {
-                helmetMaterial = Material.LEATHER_HELMET;
-                chestplateMaterial = Material.LEATHER_CHESTPLATE;
-                leggingsMaterial = Material.LEATHER_LEGGINGS;
-                bootsMaterial = Material.LEATHER_BOOTS;
-            }
+        try {
+            helmetMaterial = Material.valueOf(helmetName);
+            chestplateMaterial = Material.valueOf(chestplateName);
+            leggingsMaterial = Material.valueOf(leggingsName);
+            bootsMaterial = Material.valueOf(bootsName);
+        } catch (IllegalArgumentException e) {
+            helmetMaterial = Material.LEATHER_HELMET;
+            chestplateMaterial = Material.LEATHER_CHESTPLATE;
+            leggingsMaterial = Material.LEATHER_LEGGINGS;
+            bootsMaterial = Material.LEATHER_BOOTS;
+            plugin.getLogger().warning("Invalid armor material for tier " + tier + ": " + e.getMessage());
         }
 
-        int armorChance = random.nextInt(100);
-        if (armorChance >= 30) {
+        if (random.nextDouble() < armorChance) {
             ItemStack helmet = random.nextBoolean() ? new ItemStack(helmetMaterial) : null;
             ItemStack chestplate = random.nextBoolean() ? new ItemStack(chestplateMaterial) : null;
             ItemStack leggings = random.nextBoolean() ? new ItemStack(leggingsMaterial) : null;
@@ -159,66 +148,39 @@ public class WaveCommand implements CommandExecutor, TabCompleter {
             equipment.setLeggings(leggings);
             equipment.setBoots(boots);
 
-            int enchantChance = (tier == 5) ? 50 : 20;
-            if (tier >= 4 && random.nextInt(100) < enchantChance) {
+            double enchantChance = plugin.getConfig().getDouble(tierPath + ".enchant-chance", tier == 5 ? 0.5 : tier == 4 ? 0.2 : 0.0);
+            if (random.nextDouble() < enchantChance) {
                 if (helmet != null) helmet.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, random.nextInt(2) + 1);
                 if (chestplate != null) chestplate.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, random.nextInt(2) + 1);
             }
         }
 
-        int weaponChance = random.nextInt(100);
-        if (weaponChance >= 40) {
+        if (random.nextDouble() < weaponChance) {
             ItemStack weapon;
-            if (weaponChance < 70) {
-                weapon = new ItemStack(weaponMaterial);
-                if (tier >= 4 && random.nextInt(100) < 20) {
+            if (random.nextDouble() < 0.7) {
+                weapon = new ItemStack(Material.IRON_SWORD);
+                double enchantChance = plugin.getConfig().getDouble(tierPath + ".enchant-chance", tier == 4 || tier == 5 ? 0.2 : 0.0);
+                if (random.nextDouble() < enchantChance) {
                     weapon.addEnchantment(Enchantment.DAMAGE_ALL, random.nextInt(2) + 1);
                 }
             } else {
                 weapon = new ItemStack(Material.BOW);
-                if (tier >= 4 && random.nextInt(100) < 20) {
+                double enchantChance = plugin.getConfig().getDouble(tierPath + ".enchant-chance", tier == 4 || tier == 5 ? 0.2 : 0.0);
+                if (random.nextDouble() < enchantChance) {
                     weapon.addEnchantment(Enchantment.ARROW_DAMAGE, random.nextInt(2) + 1);
                 }
             }
             equipment.setItemInMainHand(weapon);
         }
 
-        double health, speed, damage;
-        switch (tier) {
-            case 1 -> {
-                health = 5.0 + random.nextDouble() * 5.0;
-                speed = 0.15 + random.nextDouble() * 0.05;
-                damage = 1.0 + random.nextDouble() * 1.0;
-            }
-            case 2 -> {
-                health = 15.0 + random.nextDouble() * 5.0;
-                speed = 0.20 + random.nextDouble() * 0.05;
-                damage = 2.0 + random.nextDouble() * 1.5;
-            }
-            case 3 -> {
-                health = 20.0 + random.nextDouble() * 10.0;
-                speed = 0.25 + random.nextDouble() * 0.05;
-                damage = 3.0 + random.nextDouble() * 1.5;
-            }
-            case 4 -> {
-                health = 30.0 + random.nextDouble() * 10.0;
-                speed = 0.30 + random.nextDouble() * 0.05;
-                damage = 4.0 + random.nextDouble() * 1.5;
-            }
-            case 5 -> {
-                health = 40.0 + random.nextDouble() * 20.0;
-                speed = 0.35 + random.nextDouble() * 0.10;
-                damage = 5.0 + random.nextDouble() * 2.0;
-            }
-            default -> {
-                health = 20.0; speed = 0.23; damage = 3.0;
-            }
-        }
+        double finalHealth = health + random.nextDouble() * healthVariation;
+        double finalSpeed = speed + random.nextDouble() * speedVariation;
+        double finalDamage = damage + random.nextDouble() * damageVariation;
 
-        zombie.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(health);
-        zombie.setHealth(health);
-        zombie.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(speed);
-        zombie.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(damage);
+        zombie.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(finalHealth);
+        zombie.setHealth(finalHealth);
+        zombie.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(finalSpeed);
+        zombie.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(finalDamage);
 
         equipment.setHelmetDropChance(0.0f);
         equipment.setChestplateDropChance(0.0f);
@@ -226,9 +188,23 @@ public class WaveCommand implements CommandExecutor, TabCompleter {
         equipment.setBootsDropChance(0.0f);
         equipment.setItemInMainHandDropChance(0.0f);
 
-        if (tier == 2 && random.nextInt(100) < 30) {
+        ItemStack derpicBottleCap = createDerpicBottleCap();
+        equipment.setItemInOffHand(derpicBottleCap);
+        equipment.setItemInOffHandDropChance(bottleCapDropChance);
+
+        double chickenChance = plugin.getConfig().getDouble(tierPath + ".chicken-chance", tier == 2 ? 0.3 : 0.0);
+        if (random.nextDouble() < chickenChance) {
             zombie.setPassenger(zombie.getWorld().spawnEntity(zombie.getLocation(), EntityType.CHICKEN));
         }
+    }
+
+    private ItemStack createDerpicBottleCap() {
+        ItemStack bottleCap = new ItemStack(Material.RED_DYE, 1);
+        ItemMeta meta = bottleCap.getItemMeta();
+        meta.setCustomModelData(2);
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&eDerpic Bottle Cap"));
+        bottleCap.setItemMeta(meta);
+        return bottleCap;
     }
 
     private void startBowShootingTask() {

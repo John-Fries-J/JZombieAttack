@@ -18,3 +18,13 @@ commands:
   wave:
     description: Spawns a wave of zombies based on tier
     usage: /<command> [amount per player] [tier]
+  noscy:
+    description: Gives a player a water gun
+    usage: /<command> <player>
+  zombies:
+    description: Manages plugin settings
+    usage: /<command> reload
+  permissions:
+    jzombieattack.reload:
+      description: Allows reloading the plugin config
+      default: op

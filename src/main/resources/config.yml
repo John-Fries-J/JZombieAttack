@@ -1,0 +1,162 @@
+water-gun:
+  name: "&bWater Gun"
+  custom-model-data: 1001
+  material: NETHERITE_HOE
+  player-damage: 2.0
+  entity-damage: 4.0
+  particle: DRIP_WATER
+  particle-duration: 40
+  cooldown: 20
+  enchants:
+    - "DAMAGE_ALL:1"
+  attack-speed: 4.0
+  lore:
+    - "&7&oA fun water gun that shoots damaging blasts!"
+
+battle-axe:
+  name: "&c&lBasic Bat"
+  custom-model-data: 0
+  material: NETHERITE_SWORD
+  enchants:
+    - "DAMAGE_ALL:0"
+  attack-speed: 4.0
+  lore:
+    - "&7&oA battle axe that is used by the"
+    - "&7&ozombies of the apocalypse."
+  unbreakable: true
+  upgrades:
+    barbed-bat:
+      name: "&c&lBarbed Bat"
+      custom-model-data: 2
+      material: NETHERITE_SWORD
+      enchants:
+        - "DAMAGE_ALL:1"
+      attack-speed: 4.2
+      lore:
+        - "&7&oA sharper battle axe forged by the"
+        - "&7&ozombies of the apocalypse."
+      unbreakable: true
+      cost: 10
+    barbed-nail-bat:
+      name: "&c&lBarbed and Nail Bat"
+      custom-model-data: 3
+      material: NETHERITE_SWORD
+      enchants:
+        - "DAMAGE_ALL:2"
+      attack-speed: 4.4
+      lore:
+        - "&7&oA sharper battle axe forged by the"
+        - "&7&ozombies of the apocalypse."
+      unbreakable: true
+      cost: 20
+    shredder:
+      name: "&c&lShredder"
+      custom-model-data: 5
+      material: NETHERITE_SWORD
+      enchants:
+        - "DAMAGE_ALL:3"
+      attack-speed: 4.6
+      lore:
+        - "&7&oA sharper battle axe forged by the"
+        - "&7&ozombies of the apocalypse."
+      unbreakable: true
+      cost: 30
+    slasher:
+      name: "&c&lSlasher"
+      custom-model-data: 6
+      material: NETHERITE_SWORD
+      enchants:
+        - "DAMAGE_ALL:4"
+      attack-speed: 4.8
+      lore:
+        - "&7&oA sharper battle axe forged by the"
+        - "&7&ozombies of the apocalypse."
+      unbreakable: true
+      cost: 40
+    apocalypse-blade:
+      name: "&c&lApocalypse Blade"
+      custom-model-data: 4
+      material: NETHERITE_SWORD
+      enchants:
+        - "DAMAGE_ALL:5"
+      attack-speed: 4.0
+      lore:
+        - "&7&oA sharper battle axe forged by the"
+        - "&7&ozombies of the apocalypse."
+      unbreakable: true
+      cost: 50
+
+waves:
+  tier1:
+    health: 10.0
+    health-variation: 5.0
+    speed: 0.15
+    speed-variation: 0.05
+    damage: 1.0
+    damage-variation: 1.0
+    armor-chance: 0.7
+    weapon-chance: 0.6
+    bottle-cap-drop-chance: 0.1
+    helmet: LEATHER_HELMET
+    chestplate: LEATHER_CHESTPLATE
+    leggings: LEATHER_LEGGINGS
+    boots: LEATHER_BOOTS
+  tier2:
+    health: 20.0
+    health-variation: 5.0
+    speed: 0.20
+    speed-variation: 0.05
+    damage: 2.0
+    damage-variation: 1.5
+    armor-chance: 0.7
+    weapon-chance: 0.6
+    bottle-cap-drop-chance: 0.2
+    helmet: CHAINMAIL_HELMET
+    chestplate: CHAINMAIL_CHESTPLATE
+    leggings: CHAINMAIL_LEGGINGS
+    boots: CHAINMAIL_BOOTS
+    chicken-chance: 0.3
+  tier3:
+    health: 30.0
+    health-variation: 10.0
+    speed: 0.25
+    speed-variation: 0.05
+    damage: 3.0
+    damage-variation: 1.5
+    armor-chance: 0.7
+    weapon-chance: 0.6
+    bottle-cap-drop-chance: 0.3
+    helmet: IRON_HELMET
+    chestplate: IRON_CHESTPLATE
+    leggings: IRON_LEGGINGS
+    boots: IRON_BOOTS
+  tier4:
+    health: 40.0
+    health-variation: 10.0
+    speed: 0.30
+    speed-variation: 0.05
+    damage: 4.0
+    damage-variation: 1.5
+    armor-chance: 0.7
+    weapon-chance: 0.6
+    bottle-cap-drop-chance: 0.4
+    helmet: GOLDEN_HELMET
+    chestplate: GOLDEN_CHESTPLATE
+    leggings: GOLDEN_LEGGINGS
+    boots: GOLDEN_BOOTS
+    enchant-chance: 0.2
+  tier5:
+    health: 60.0
+    health-variation: 20.0
+    speed: 0.35
+    speed-variation: 0.10
+    damage: 5.0
+    damage-variation: 2.0
+    armor-chance: 0.7
+    weapon-chance: 0.6
+    bottle-cap-drop-chance: 0.5
+    helmet: DIAMOND_HELMET
+    chestplate: DIAMOND_CHESTPLATE
+    leggings: DIAMOND_LEGGINGS
+    boots: DIAMOND_BOOTS
+    enchant-chance: 0.5
